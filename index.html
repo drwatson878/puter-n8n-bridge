@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Puter ↔ n8n Bridge (Frontend Runner)</title>
-  <script type="module">
-    import * as puter from "https://js.puter.com/v2/puter.mjs";
+ <script type="module">
+  import * as puter from "https://unpkg.com/@puter/puter-js@latest/dist/puter.mjs";
 
     async function getInputFromN8N(url) {
       const r = await fetch(url, { method: "GET" });
