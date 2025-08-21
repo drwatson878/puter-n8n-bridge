@@ -22,8 +22,8 @@
     }
 
     async function runOnce() {
-      const inputUrl = document.getElementById("inputUrl").value.trim();
-      const outputUrl = document.getElementById("outputUrl").value.trim();
+      const inputUrl = document.getElementById("https://n8n-0s88.onrender.com/webhook-test/chatbot-input").value.trim();
+      const outputUrl = document.getElementById("https://n8n-0s88.onrender.com/webhook-test/chatbot-output").value.trim();
       const model = document.getElementById("model").value.trim() || "gpt-4.1-mini";
 
       const message = await getInputFromN8N(inputUrl);
