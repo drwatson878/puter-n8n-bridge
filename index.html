@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Puter ↔ n8n Bridge (Frontend Runner)</title>
+  <script type="module">
+    import * as puter from "https://js.puter.com/v2/puter.mjs";
+
+    async function getInputFromN8N(url) {
+      const r = await fetch(url, { method: "GET" });
+      const j = await r.json();
+      return j.message;
+    }
+
+    async function sendOutputToN8N(url, reply) {
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reply })
+      });
+    }
+
+    async function runOnce() {
+      const inputUrl = document.getElementById("inputUrl").value.trim();
+      const outputUrl = document.getElementById("outputUrl").value.trim();
+      const model = document.getElementById("model").value.trim() || "gpt-4.1-mini";
+
+      const message = await getInputFromN8N(inputUrl);
+      let reply = "";
+      for await (const chunk of puter.ai.chat.completions.create({
+        model,
+        messages: [{ role: "user", content: message }]
+      })) {
+        reply += chunk?.choices?.[0]?.delta?.content || "";
+      }
+      await sendOutputToN8N(outputUrl, reply);
+      document.getElementById("log").textContent = "ورودی: " + message + "\n\nپاسخ: " + reply;
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("run").addEventListener("click", runOnce);
+    });
+  </script>
+</head>
+<body style="background:#111;color:#eee;font-family:sans-serif;padding:20px;">
+  <h1>🔗 Puter ↔ n8n Bridge</h1>
+  <p>آدرس وبهوک‌های n8n را وارد کنید:</p>
+  <input id="inputUrl" type="text" placeholder="n8n Webhook Input URL" size="60"/><br><br>
+  <input id="outputUrl" type="text" placeholder="n8n Webhook Output URL" size="60"/><br><br>
+  <input id="model" type="text" placeholder="gpt-4.1-mini" size="30"/><br><br>
+  <button id="run">🚀 اجرا</button>
+  <pre id="log" style="white-space:pre-wrap;background:#222;padding:12px;border-radius:8px;margin-top:12px;"></pre>
+</body>
+</html>
